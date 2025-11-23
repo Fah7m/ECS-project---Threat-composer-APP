@@ -1,0 +1,29 @@
+# Build stage
+
+FROM node:24-alpine AS build
+
+WORKDIR /app
+
+COPY package*.json yarn.lock ./
+
+RUN yarn install
+
+COPY . .
+
+# Production stage 
+
+FROM node:24-alpine
+
+WORKDIR /app
+    
+RUN adduser -D -u 65532 appuser && chown -R appuser:appuser /app
+
+USER appuser
+
+COPY --from=build /app /app
+
+EXPOSE 3000
+
+CMD [ "yarn", "start" ]
+
+# End of Dockerfile
