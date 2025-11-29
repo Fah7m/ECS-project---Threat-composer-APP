@@ -12,6 +12,7 @@ env:
   ECR_REGISTRY: ${{ secrets.ECR_REGISTRY }}
   ECR_REPOSITORY: ${{ secrets.ECR_REPOSITORY }} 
   IMAGE_TAG: ${{ github.sha }}
+  VERSION: ${{ github.run_id }}
   ECR_URI: ${{ secrets.ECR_REGISTRY }}/${{ secrets.ECR_REPOSITORY }}
 
 jobs:
@@ -38,7 +39,6 @@ jobs:
           else
             echo "ECR repository ${{ env.ECR_REPOSITORY }} already exists.";
           fi
-    
 
       - name: Login to Amazon ECR
         id: login-ecr
@@ -46,8 +46,8 @@ jobs:
 
       - name: Build, tag, and push image to Amazon ECR
         run: |
-          docker build -t ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }} -f app/dockerfile ./app
-          docker push ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}
+          docker build -t ${{ env.ECR_URI }}:${{ env.VERSION }}-${{ env.IMAGE_TAG }} -f app/dockerfile ./app
+          docker push ${{ env.ECR_URI }}:${{ env.VERSION }}-${{ env.IMAGE_TAG }}
 
       - name: Trivy Security Scan
         uses: aquasecurity/trivy-action@master
