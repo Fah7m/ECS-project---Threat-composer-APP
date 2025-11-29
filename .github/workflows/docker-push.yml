@@ -31,14 +31,18 @@ jobs:
       - name: Validate AWS connection
         run: aws sts get-caller-identity
       
-      - name: Create ECR repository
+      - name: Create ECR repository and check existence
         run: |
-          aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY }} || aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY }}
+          if ! aws ecr describe-repositories --repository-names ${{ env.ECR_REPOSITORY }}; then
+            aws ecr create-repository --repository-name ${{ env.ECR_REPOSITORY }};
+          else
+            echo "ECR repository ${{ env.ECR_REPOSITORY }} already exists.";
+          fi
     
       - name: Build, tag, and push image to Amazon ECR
         run: |
-          docker build -t ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }} -f app/dockerfile .
-          docker push ${{ env.ECR_URI }}:${{ env.IMAGE_TAG }}
+          docker build -t ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }} -f app/dockerfile .
+          docker push ${{ env.ECR_REPOSITORY }}:${{ env.IMAGE_TAG }}
 
       - name: Trivy Security Scan
         uses: aquasecurity/trivy-action@master
