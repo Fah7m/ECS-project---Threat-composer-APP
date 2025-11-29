@@ -41,8 +41,8 @@ jobs:
     
       - name: Build, tag, and push image to Amazon ECR
         run: |
-          docker build -t ${{ env.ECR_URI }}:v1${{ env.IMAGE_TAG }} -f app/dockerfile ./app
-          docker push ${{ env.ECR_URI }}:v1${{ env.IMAGE_TAG }}
+          docker build -t ${{ env.ECR_URI }}:v1 -f app/dockerfile ./app
+          docker push ${{ env.ECR_URI }}:v1
 
       - name: Trivy Security Scan
         uses: aquasecurity/trivy-action@master
