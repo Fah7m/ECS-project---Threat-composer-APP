@@ -33,33 +33,33 @@ jobs:
       - name: Checkov Scan
         uses: bridgecrewio/checkov-action@master
         with:
-          directory: ../infra/
+          directory: ./infra/
 
       - name: Terraform Format Check
         run: terraform fmt -check
-        working-directory: ../infra
+        working-directory: ./infra
 
       - name: Terraform Validate and output
         run: terraform validate && terraform output -json
-        working-directory: ../infra
+        working-directory: ./infra
 
       - name: Terraform Init
         run: terraform init
-        working-directory: ../infra
+        working-directory: ./infra
 
       - name: Terraform Plan
         run: terraform plan -out=tfplan
-        working-directory: ../infra
+        working-directory: ./infra
 
       - name: Capture Terraform Plan Output and error code
         id: plan
         run: |
           terraform show -json tfplan > plan.json
           echo "::set-output name=plan-json::$(cat plan.json | jq -c .)"
-        working-directory: ../infra
+        working-directory: ./infra
 
       - name: Terraform Apply when plan is approved
         if: github.event_name == 'workflow_dispatch'
         run: terraform apply -auto-approve tfplan
-        working-directory: ../infra
+        working-directory: ./infra
   
