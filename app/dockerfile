@@ -1,4 +1,4 @@
-# ---------- BUILD STAGE ----------
+# Build stage
 FROM node:24-alpine AS build
 
 WORKDIR /app
@@ -8,27 +8,22 @@ RUN yarn install
 
 COPY . .
 
-# Build the production static files
 RUN yarn build
 
 
-# ---------- PRODUCTION STAGE ----------
+# Production stage
 FROM node:24-alpine
 
 WORKDIR /app
 
-# Create non-root user
 RUN adduser -D -u 65532 appuser && chown -R appuser:appuser /app
 
-# Install a lightweight static file server (instead of react-scripts)
 RUN yarn global add serve
 
 USER appuser
 
-# Copy only the built static assets from the build stage
 COPY --from=build /app/build ./build
 
 EXPOSE 3000
 
-# Serve the static assets
 CMD [ "serve", "-s", "build", "-l", "3000" ]

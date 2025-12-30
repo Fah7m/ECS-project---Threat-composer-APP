@@ -1,0 +1,65 @@
+name: Terraform Plan and Apply
+
+on: [workflow_dispatch]
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+  AWS_REGION: ${{ secrets.AWS_REGION }}
+
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: OIDC Login to AWS
+        uses: aws-actions/configure-aws-credentials@v3
+        with:
+          role-to-assume: ${{ env.role-to-assume }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Validate AWS connection
+        run: aws sts get-caller-identity
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      - name: Checkov Scan
+        uses: bridgecrewio/checkov-action@master
+        with:
+          directory: ../infra/
+
+      - name: Terraform Format Check
+        run: terraform fmt -check
+        working-directory: ../infra
+
+      - name: Terraform Validate and output
+        run: terraform validate && terraform output -json
+        working-directory: ../infra
+
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ../infra
+
+      - name: Terraform Plan
+        run: terraform plan -out=tfplan
+        working-directory: ../infra
+
+      - name: Capture Terraform Plan Output and error code
+        id: plan
+        run: |
+          terraform show -json tfplan > plan.json
+          echo "::set-output name=plan-json::$(cat plan.json | jq -c .)"
+        working-directory: ../infra
+
+      - name: Terraform Apply when plan is approved
+        if: github.event_name == 'workflow_dispatch'
+        run: terraform apply -auto-approve tfplan
+        working-directory: ../infra
+  
