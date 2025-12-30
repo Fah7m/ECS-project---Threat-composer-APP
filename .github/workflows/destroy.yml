@@ -7,7 +7,7 @@ permissions:
   id-token: write
 
 env:
-  role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
+  role-to-assume: ${{ secrets.AWS_INFRA_ROLE }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
 
 jobs:
