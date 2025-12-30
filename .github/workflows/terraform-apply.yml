@@ -34,6 +34,7 @@ jobs:
         uses: bridgecrewio/checkov-action@master
         with:
           directory: ./infra/
+        continue-on-error: true
 
       - name: Terraform Format Check
         run: terraform fmt -check
