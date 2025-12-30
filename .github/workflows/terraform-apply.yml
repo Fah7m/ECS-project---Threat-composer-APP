@@ -36,16 +36,16 @@ jobs:
           directory: ./infra/
         continue-on-error: true
 
+      - name: Terraform Init
+        run: terraform init
+        working-directory: ./infra
+
       - name: Terraform Format Check
         run: terraform fmt -check
         working-directory: ./infra
 
       - name: Terraform Validate and output
         run: terraform validate && terraform output -json
-        working-directory: ./infra
-
-      - name: Terraform Init
-        run: terraform init
         working-directory: ./infra
 
       - name: Terraform Plan
