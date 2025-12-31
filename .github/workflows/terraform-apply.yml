@@ -9,6 +9,7 @@ permissions:
 env:
   role-to-assume: ${{ secrets.AWS_INFRA_ROLE }}
   AWS_REGION: ${{ secrets.AWS_REGION }}
+  
 
 jobs:
   terraform:
@@ -49,7 +50,10 @@ jobs:
         working-directory: ./infra
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan -refresh=false -lock-timeout=60s -parallelism=5
+        env:
+          TF_LOG: TRACE
+          TF_LOG_PATH: ./infra/terraform.log
+        run: terraform plan -out=tfplan -refresh=false -lock-timeout=60s -parallelism=2
         working-directory: ./infra
 
       - name: Capture Terraform Plan Output and error code
