@@ -62,12 +62,6 @@ resource "aws_ecs_service" "service" {
   }
 }
 
-#CloudWatch Log Group for ECS Tasks
-resource "aws_cloudwatch_log_group" "ecs_log_group" {
-  name              = "/ecs/${var.service_name}"
-  retention_in_days = 30
-}
-
 # ECS Task Definition
 resource "aws_ecs_task_definition" "default" {
   family                   = var.service_name
@@ -93,7 +87,8 @@ resource "aws_ecs_task_definition" "default" {
       logConfiguration = {
         logDriver = "awslogs"
         options = {
-          "awslogs-group"         = aws_cloudwatch_log_group.ecs_log_group.name
+          #"awslogs-group"         = aws_cloudwatch_log_group.ecs_log_group.name
+          "awslogs-group"         = "/ecs/${var.service_name}"
           "awslogs-region"        = var.aws_logs_region
           "awslogs-stream-prefix" = "ecs"
         }
