@@ -30,6 +30,10 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      - name: Write tfvars file from secrets
+        working-directory: ./infra
+        run: |
+          echo "${{ secrets.TF_VARS }}" > terraform.tfvars
       - name: Terraform Init
         run: terraform init
         working-directory: ../infra

@@ -37,6 +37,11 @@ jobs:
           directory: ./infra/
         continue-on-error: true
 
+      - name: Write tfvars file from secrets
+        working-directory: ./infra
+        run: |
+          echo "${{ secrets.TF_VARS }}" > terraform.tfvars
+
       - name: Terraform Init
         run: terraform init
         working-directory: ./infra
@@ -50,10 +55,7 @@ jobs:
         working-directory: ./infra
 
       - name: Terraform Plan
-        env:
-          TF_LOG: TRACE
-          TF_LOG_PATH: ./infra/terraform.log
-        run: terraform plan -out=tfplan -refresh=false -lock-timeout=60s -parallelism=2
+        run: terraform plan -out=tfplan -var-file=terraform.tfvars
         working-directory: ./infra
 
       - name: Capture Terraform Plan Output and error code
