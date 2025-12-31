@@ -49,7 +49,7 @@ jobs:
         working-directory: ./infra
 
       - name: Terraform Plan
-        run: terraform plan -out=tfplan
+        run: terraform plan -out=tfplan -refresh=false -lock-timeout=60s -parallelism=5
         working-directory: ./infra
 
       - name: Capture Terraform Plan Output and error code
