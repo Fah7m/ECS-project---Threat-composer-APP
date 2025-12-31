@@ -40,7 +40,9 @@ jobs:
       - name: Write tfvars file from secrets
         working-directory: ./infra
         run: |
-          echo "${{ secrets.TF_VARS }}" > terraform.tfvars
+          cat > terraform.tfvars << 'EOF'
+          ${{ secrets.TF_VARS }}
+          EOF
 
       - name: Terraform Init
         run: terraform init
