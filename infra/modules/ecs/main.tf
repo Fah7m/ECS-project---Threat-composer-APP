@@ -90,6 +90,7 @@ resource "aws_ecs_task_definition" "default" {
           "awslogs-group"         = "/ecs/${var.service_name}"
           "awslogs-region"        = var.aws_logs_region
           "awslogs-stream-prefix" = "ecs"
+          "awslogs-create-group"  = "true"
         }
       }
     }
