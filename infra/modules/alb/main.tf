@@ -71,7 +71,7 @@ resource "aws_alb_listener" "https_listener" {
   load_balancer_arn = aws_alb.ecs_alb.arn
   port              = "443"
   protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-2016-08"
+  ssl_policy        = "ELBSecurityPolicy-20"
   certificate_arn   = var.acm_certificate_arn
 
   default_action {
@@ -86,7 +86,11 @@ resource "aws_alb_listener" "http_listener" {
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_alb_target_group.service_target_group.arn
+    type             = "redirect"
+    redirect {
+      protocol   = "HTTPS"
+      port       = "443"
+      status_code = "HTTP_301"
+    }
   }
 }
