@@ -71,7 +71,7 @@ resource "aws_alb_listener" "https_listener" {
   load_balancer_arn = aws_alb.ecs_alb.arn
   port              = "443"
   protocol          = "HTTPS"
-  ssl_policy        = "ELBSecurityPolicy-20"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
   certificate_arn   = var.acm_certificate_arn
 
   default_action {
