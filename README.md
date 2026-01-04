@@ -15,6 +15,30 @@ This project includes:
 - **CI/CD Workflows** (`.github/workflows`): GitHub Actions automating Docker image builds, image pushes to ECR, and Terraform deployments.
 - **Production Patterns**: Remote Terraform state in S3 with DynamoDB locking, secure ALB TLS termination, and scalable ECS service.
 
+Project Structure:
+
+ECS/
+├── .github/
+│   └── workflows/
+│       ├── docker-push.yml
+│       ├── terraform-apply.yml
+│       └── destroy.yml
+├── app/
+|   ├── dockerfile
+├── infra/
+│   ├── main.tf
+│   ├── provider.tf
+|   ├── terraform.tfvars
+│   ├── variable.tf
+│   └── modules/
+│       ├── acm/
+│       ├── alb/
+│       ├── ecs/
+│       ├── iam/
+|       ├── route53/
+│       └── vpc/
+└──
+
 ---
 
 ## 📌 Table of Contents
