@@ -34,11 +34,12 @@ This project includes:
 
 This project deploys the Threat Composer application via the following components:
 
-
-
 All infrastructure is defined as Terraform code and deployed automatically through GitHub Actions.
 
-Refer to `architecture-diagram.png` (if present) for visual details.
+Refer to `architecture-diagram.png
+<img width="628" height="353" alt="image" src="https://github.com/user-attachments/assets/9db8dc92-21e6-458e-be3b-26beba13e6ac" />
+
+
 
 ---
 
