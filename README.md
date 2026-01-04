@@ -52,18 +52,27 @@ ECS/
 4. [Infrastructure Deployment](#infrastructure-deployment)  
 5. [CI/CD Deployment](#ci-cd-deployment)  
 6. [Improvements & Future Work](#improvements--future-work)  
-7. [Troubleshooting](#troubleshooting)  
+7. [Improvements](#troubleshooting)  
 8. [License](#license)
 
 ---
 
-## 🏗 Architecture Overview
+## 🏗 🔨Deployment Overview
 
-This project deploys the Threat Composer application via the following components:
+Below are screenshots of the full deployment from the very beginning.
 
-All infrastructure is defined as Terraform code and deployed automatically through GitHub Actions.
+***Docker build and push to AWS ECR:***
 
-Refer to `architecture-diagram.png
+<img width="1875" height="686" alt="image" src="https://github.com/user-attachments/assets/23bb3ddd-8d40-459c-9590-f64559ce4b4d" />
+
+***Terraform Plan and Apply***
+
+<img width="1877" height="679" alt="image" src="https://github.com/user-attachments/assets/2ee54c52-0f5b-47c6-a8fe-0471b0abc7d9" />
+
+***Application snapshot***
+
+
+
 
 <img width="928" height="653" alt="image" src="https://github.com/user-attachments/assets/9db8dc92-21e6-458e-be3b-26beba13e6ac" />
 
