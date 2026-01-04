@@ -17,6 +17,7 @@ This project includes:
 
 Project Structure:
 
+```
 ECS/
 ├── .github/
 │   └── workflows/
@@ -37,8 +38,8 @@ ECS/
 │       ├── iam/
 |       ├── route53/
 │       └── vpc/
-└──
-
+└── README.md
+```
 ---
 
 ## 📌 Table of Contents
