@@ -34,3 +34,24 @@ This project includes:
 
 This project deploys the Threat Composer application via the following components:
 
+
+
+All infrastructure is defined as Terraform code and deployed automatically through GitHub Actions.
+
+Refer to `architecture-diagram.png` (if present) for visual details.
+
+---
+
+## 🧰 Prerequisites
+
+Before you begin:
+
+- **Terraform v1.x**
+- **AWS CLI v2**
+- **Docker**
+- **GitHub Account**
+- **AWS Account + Credentials**
+- Configure AWS CLI:
+  ```bash
+  aws configure
+
