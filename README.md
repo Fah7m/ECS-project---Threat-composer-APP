@@ -38,7 +38,7 @@ All infrastructure is defined as Terraform code and deployed automatically throu
 
 Refer to `architecture-diagram.png
 
-<img width="828" height="553" alt="image" src="https://github.com/user-attachments/assets/9db8dc92-21e6-458e-be3b-26beba13e6ac" />
+<img width="928" height="653" alt="image" src="https://github.com/user-attachments/assets/9db8dc92-21e6-458e-be3b-26beba13e6ac" />
 
 
 
