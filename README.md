@@ -71,11 +71,11 @@ Below are screenshots of the full deployment from the very beginning.
 
 ***Application snapshot***
 
+<img width="1919" height="828" alt="image" src="https://github.com/user-attachments/assets/d683236d-d012-4ec6-a618-f2836cd21142" />
 
+***Terraform Destroy***
 
-
-<img width="928" height="653" alt="image" src="https://github.com/user-attachments/assets/9db8dc92-21e6-458e-be3b-26beba13e6ac" />
-
+<img width="1907" height="682" alt="image" src="https://github.com/user-attachments/assets/5186c74d-286f-4855-8062-ba624c8aa18e" />
 
 
 ---
