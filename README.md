@@ -115,89 +115,155 @@ This project follows a clear separation of concerns between user access, develop
 - ECS (Fargate) resources, including:
   - ECS cluster, Task Definitions, ECS Service running in private subnets
 
-IAM roles and policies required for ECS, including:
+- IAM roles and policies required for ECS, including:
+  - Task execution role, Task role with least-privilege permissions
 
-Task execution role
-
-Task role with least-privilege permissions
-
-Security groups controlling traffic between the ALB and ECS tasks
+- Security groups controlling traffic between the ALB and ECS tasks
 
 - The ECS service pulls the latest container image from ECR and performs a rolling update of running tasks.
 
 - Infrastructure can be safely removed by manually triggering a Terraform destroy workflow, ensuring clean teardown of all managed resources.
 
+- **Teardown Workflow (Cleanup)**
 
-**🚀 Deployment & CI/CD Workflow (Secure Automation)**
+- Infrastructure can be safely destroyed by running:
 
-Pipeline 1: Application Build & Image Push
-
-GitHub Actions builds the application into a Docker image.
-
-The image is tagged and pushed to Amazon ECR.
-
-Permissions are granted via a least-privilege IAM role assumed through OIDC.
-
-Pipeline 2: Infrastructure Provisioning (Terraform)
-
-GitHub Actions runs Terraform to provision or update infrastructure.
-
-Terraform uses:
-
-S3 for remote state storage
-
-DynamoDB for state locking
-
-Resources managed include:
-
-VPC, subnets, IGW, NAT
-
-ALB and listeners
-
-ECS cluster, service, and task definitions
-
-IAM roles and security groups
-
-Terraform ensures idempotent, predictable infrastructure changes.
-
-Service Update
-
-The ECS service detects the new container image in ECR.
-
-Tasks are replaced using a rolling deployment strategy.
-
-The ALB continues routing traffic with no downtime.
-
-**🧹 Teardown Workflow (Cleanup)**
-
-Infrastructure can be safely destroyed by running:
-
+''
 terraform destroy
+'''
 
+- Terraform:
+  - Uses the same remote state and locking mechanism
+  - Deletes resources in the correct dependency order
 
-Terraform:
+- This ensures no orphaned infrastructure remains.
 
-Uses the same remote state and locking mechanism
+**Security Highlights and Best Practices**
 
-Deletes resources in the correct dependency order
+- A multistage **dockerfile** which
+- The use of OIDC in the pipeline ensure no long-lived AWS Credentials
 
-This ensures no orphaned infrastructure remains.
+- Least privilege IAM roles 
 
-**🔐 Security Highlights**
+- Private subnets for application workloads
 
-No long-lived AWS credentials
-
-OIDC-based authentication for CI/CD
-
-Least-privilege IAM roles
-
-Private subnets for application workloads
-
-TLS termination using ACM
+- TLS termination using ACM
 
 Centralised logging with CloudWatch
 
 
+---
+
+**🔐 Security & Best Practices**
+
+This project follows security-first and production-ready best practices across CI/CD pipelines, containerisation, infrastructure provisioning, and runtime configuration, with multiple layers of automated security scanning.
+
+**CI/CD & Pipeline Security**
+
+- OIDC-based authentication is used between GitHub Actions and AWS, eliminating long-lived AWS credentials.
+
+- CI/CD pipelines assume IAM roles with short-lived, least-privilege permissions.
+
+- Deployment workflows are manually triggered, reducing the risk of unintended or automatic production changes.
+
+- Application and infrastructure pipelines are logically separated, providing clearer ownership and reduced blast radius.
+
+- All pipeline executions are fully auditable via GitHub Actions logs.
+
+**Automated Security Scanning**
+
+Security scanning is integrated directly into the CI/CD pipelines to detect issues early.
+
+***Infrastructure Pipeline***
+
+- Checkov is run as part of the Terraform pipeline to statically analyse infrastructure code.
+
+- Checkov enforces security and compliance best practices, including:
+  - Network exposure, IAM misconfigurations, Encryption and logging controls, Infrastructure changes are validated before deployment, reducing misconfiguration risk.
+
+***Application / Docker Pipeline***
+
+- Trivy is used to scan Docker images for:
+  - Known vulnerabilities (CVEs), OS and dependency-level security issues
+
+- CodeQL is used to perform static code analysis on the application source, detecting:
+  - Common security vulnerabilities, Unsafe coding patterns
+
+- Images are only deployed after passing all security scans.
+
+**Container Security & Optimisation**
+
+The application uses a multi-stage Docker build, separating build-time and runtime dependencies.
+
+This reduces the final image size by approximately X%, resulting in:
+
+Faster ECS task startup times
+
+Reduced attack surface
+
+Lower network and storage overhead
+
+Containers run as a non-root user, following container hardening best practices.
+
+Only required runtime artifacts are included in the final image.
+
+Docker images are tagged using the Git commit SHA, ensuring immutable, traceable deployments.
+
+Infrastructure as Code (Terraform)
+
+Infrastructure is fully defined and managed using Terraform.
+
+A modular Terraform design is used, with separate modules for:
+
+VPC networking
+
+Application Load Balancer
+
+ACM certificates and Route 53 DNS
+
+ECS services
+
+IAM roles for ECS
+
+Terraform state is:
+
+Stored remotely in S3
+
+Protected with DynamoDB state locking
+
+The infrastructure is idempotent, allowing safe re-runs without unintended changes.
+
+Clean teardown is supported using terraform destroy, ensuring no orphaned resources.
+
+Network & Runtime Security
+
+ECS tasks run exclusively in private subnets and are never directly exposed to the internet.
+
+Inbound traffic is restricted to the Application Load Balancer.
+
+Security groups enforce explicit traffic flows between ALB and ECS tasks.
+
+TLS is handled at the ALB using ACM-managed certificates, avoiding certificate management inside containers.
+
+Outbound traffic from private subnets is controlled via a NAT Gateway.
+
+Centralised logging is enabled using CloudWatch Logs.
+
+Operational Best Practices
+
+Clear separation of build, deploy, and runtime responsibilities.
+
+Defence-in-depth approach through:
+
+Static analysis (CodeQL)
+
+Image vulnerability scanning (Trivy)
+
+Infrastructure policy checks (Checkov)
+
+Deployments are reproducible, secure, and auditable.
+
+The overall design aligns with AWS Well-Architected Framework principles.
 
 ---
 
