@@ -57,40 +57,17 @@ ECS/
 
 ---
 
-## 🏗 🔨Deployment Overview
-
-Below are screenshots of the full deployment from the very beginning.
-
-***Docker build and push to AWS ECR:***
-
-<img width="1875" height="686" alt="image" src="https://github.com/user-attachments/assets/23bb3ddd-8d40-459c-9590-f64559ce4b4d" />
-
-***Terraform Plan and Apply***
-
-<img width="1877" height="679" alt="image" src="https://github.com/user-attachments/assets/2ee54c52-0f5b-47c6-a8fe-0471b0abc7d9" />
-
-***Application snapshot***
-
-<img width="1919" height="828" alt="image" src="https://github.com/user-attachments/assets/d683236d-d012-4ec6-a618-f2836cd21142" />
-
-***Terraform Destroy***
-
-<img width="1907" height="682" alt="image" src="https://github.com/user-attachments/assets/5186c74d-286f-4855-8062-ba624c8aa18e" />
-
-
----
-
 ## 🔄 Workflow
 
-This project follows a clear separation of concerns between user access, developer interaction, and automated deployment, with security-first practices applied throughout.
+This project follows a clear separation of concerns between user access, developer interaction, and automated deployment, with industry best practices applied throughout.
 
 **🧑‍💻 User Workflow (Application Access)**
 
-A user navigates to the application domain (for example: https://<your-domain>).
+-A user navigates to the application domain (for example: http://tm.f7him.com).
 
-Route 53 resolves the domain directly to the Application Load Balancer (ALB) using an Alias record.
+-Route 53 resolves the domain directly to the Application Load Balancer (ALB) using an Alias record.
 
-The ALB:
+-The ALB:
 
 Terminates HTTPS using an ACM-managed TLS certificate
 
@@ -209,6 +186,30 @@ Centralised logging with CloudWatch
 
 
 ---
+
+---
+
+## 🏗 🔨Deployment Overview
+
+Below are screenshots of the full deployment from the very beginning.
+
+***Docker build and push to AWS ECR:***
+
+<img width="1875" height="686" alt="image" src="https://github.com/user-attachments/assets/23bb3ddd-8d40-459c-9590-f64559ce4b4d" />
+
+***Terraform Plan and Apply***
+
+<img width="1877" height="679" alt="image" src="https://github.com/user-attachments/assets/2ee54c52-0f5b-47c6-a8fe-0471b0abc7d9" />
+
+***Application snapshot***
+
+<img width="1919" height="828" alt="image" src="https://github.com/user-attachments/assets/d683236d-d012-4ec6-a618-f2836cd21142" />
+
+***Terraform Destroy***
+
+<img width="1907" height="682" alt="image" src="https://github.com/user-attachments/assets/5186c74d-286f-4855-8062-ba624c8aa18e" />
+
+
 
 ## 🧰 Prerequisites
 
