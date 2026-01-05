@@ -46,7 +46,7 @@ ECS/
 │   ├── main.tf
 │   ├── provider.tf
 |   ├── terraform.tfvars (hidden)
-│   ├── variable.tf
+│   ├── variables.tf
 │   └── modules/
 │       ├── acm/
 │       ├── alb/
