@@ -43,9 +43,11 @@ ECS/
 └── README.md
 ```
 
+---
 ## 🔄 Workflow
 
 This project follows a clear separation of concerns between user access, developer interaction, and automated deployment, with industry best practices applied throughout.
+
 
 **User Workflow (Application Access)**
 
@@ -58,26 +60,19 @@ This project follows a clear separation of concerns between user access, develop
 - A client initiates an HTTPS connection to the application domain.
 
 - The Application Load Balancer presents an ACM-managed TLS certificate and completes the TLS handshake with the client.
-
-- An encrypted HTTPS session is established between the client and the ALB.
-
-- The ALB decrypts the incoming request and applies listener rules and routing logic.
-
-- The ALB forwards the request to the ECS target group
-
-- ECS tasks, running in private subnets, receive the request over the VPC’s internal network.
-
-- The application inside the ECS task processes the request and generates a response.
-
-- The response is sent back to the ALB.
-
-- The ALB returns the response to the client over the existing HTTPS connection.
-
-- Application logs are streamed to CloudWatch Logs, and any outbound traffic from ECS tasks exits via the Private subnet → NAT Gateway → Internet Gateway → Internet
+  - An encrypted HTTPS session is established between the client and the ALB.
+  - The ALB decrypts the incoming request and applies listener rules and routing logic.
+  - The ALB forwards the request to the ECS target group
+  - ECS tasks, running in private subnets, receive the request over the VPC’s internal network.
+  - The application inside the ECS task processes the request and generates a response.
+  - The response is sent back to the ALB.
+  - The ALB returns the response to the client over the existing HTTPS connection.
+  - Application logs are streamed to CloudWatch Logs, and any outbound traffic from ECS tasks exits via the Private subnet → NAT Gateway → Internet Gateway → Internet
 
 - At no point are application containers directly exposed to the internet.
 
-**👨‍💻 Developer Workflow & CI/CD Workflow (Source to Deployment)**
+
+**Developer Workflow & CI/CD Workflow (Source to Deployment)**
 
 - The developer makes changes to application code (/app) and/or infrastructure code (/infra) and pushes them to the main branch.
 
@@ -85,13 +80,15 @@ This project follows a clear separation of concerns between user access, develop
 
 - CI/CD authenticates to AWS using OIDC, allowing GitHub Actions to assume IAM roles with short-lived credentials and no long-lived secrets.
 
-- **The application pipeline:**
+
+**The application pipeline:**
 
 - Builds the Docker image using a multi-stage build
 
 - Tags with SHA and pushes the image to Amazon ECR
 
-- **The infrastructure pipeline:**
+
+**The infrastructure pipeline:**
 
 - Runs Terraform to provision or update AWS resources
 
@@ -99,7 +96,8 @@ This project follows a clear separation of concerns between user access, develop
 
 - Uses DynamoDB for state locking to prevent concurrent runs
 
-- **Terraform deploys and manages the below modules:**
+
+**Terraform deploys and manages the below modules:**
 
 - VPC networking, including:
   - VPC, Public/Private subnets, Internet Gateway (IGW), NAT GW and routing
@@ -124,13 +122,14 @@ This project follows a clear separation of concerns between user access, develop
 
 - Infrastructure can be safely removed by manually triggering a Terraform destroy workflow, ensuring clean teardown of all managed resources.
 
-- **Teardown Workflow (Cleanup)**
+
+**Teardown Workflow (Cleanup)**
 
 - Infrastructure can be safely destroyed by running:
 
-''
+```
 terraform destroy
-'''
+```
 
 - Terraform:
   - Uses the same remote state and locking mechanism
@@ -138,25 +137,32 @@ terraform destroy
 
 - This ensures no orphaned infrastructure remains.
 
-**Security Highlights and Best Practices**
-
-- A multistage **dockerfile** which
-- The use of OIDC in the pipeline ensure no long-lived AWS Credentials
-
-- Least privilege IAM roles 
-
-- Private subnets for application workloads
-
-- TLS termination using ACM
-
-Centralised logging with CloudWatch
-
 
 ---
 
-**🔐 Security & Best Practices**
+## Security Highlights and Best Practices
+
 
 This project follows security-first and production-ready best practices across CI/CD pipelines, containerisation, infrastructure provisioning, and runtime configuration, with multiple layers of automated security scanning.
+
+**Container Security & Optimisation**
+
+- The application uses a multi-stage Docker build, separating build-time and runtime dependencies.
+
+- The Docker image size was reduced by approximately **88.8%**, from 2.59 GB to 291 MB, because of the multistage build.
+
+- Faster ECS task startup times
+
+- Reduced attack surface
+
+- Lower network and storage overhead
+
+- Containers run as a non-root user, following container hardening best practices.
+
+- Only required runtime artifacts are included in the final image.
+
+- Docker images are tagged using the Git commit SHA, ensuring immutable, traceable deployments.
+
 
 **CI/CD & Pipeline Security**
 
@@ -170,9 +176,11 @@ This project follows security-first and production-ready best practices across C
 
 - All pipeline executions are fully auditable via GitHub Actions logs.
 
+
 **Automated Security Scanning**
 
 Security scanning is integrated directly into the CI/CD pipelines to detect issues early.
+
 
 ***Infrastructure Pipeline***
 
@@ -180,6 +188,7 @@ Security scanning is integrated directly into the CI/CD pipelines to detect issu
 
 - Checkov enforces security and compliance best practices, including:
   - Network exposure, IAM misconfigurations, Encryption and logging controls, Infrastructure changes are validated before deployment, reducing misconfiguration risk.
+
 
 ***Application / Docker Pipeline***
 
@@ -191,85 +200,26 @@ Security scanning is integrated directly into the CI/CD pipelines to detect issu
 
 - Images are only deployed after passing all security scans.
 
-**Container Security & Optimisation**
 
-The application uses a multi-stage Docker build, separating build-time and runtime dependencies.
+**Operational Best Practices**
 
-This reduces the final image size by approximately X%, resulting in:
+- Clear separation of build, deploy, and runtime responsibilities.
 
-Faster ECS task startup times
+- Defence-in-depth approach through:
+  - Static analysis (CodeQL)
+  - Image vulnerability scanning (Trivy)
+  - Infrastructure policy checks (Checkov)
 
-Reduced attack surface
+- The infrastructure is idempotent, allowing safe re-runs without unintended changes.
 
-Lower network and storage overhead
+- Deployments are **reproducible, seccure, and auditable**
+  
+- The overall design aligns with AWS Well-Architected Framework principles.
 
-Containers run as a non-root user, following container hardening best practices.
-
-Only required runtime artifacts are included in the final image.
-
-Docker images are tagged using the Git commit SHA, ensuring immutable, traceable deployments.
-
-Infrastructure as Code (Terraform)
-
-Infrastructure is fully defined and managed using Terraform.
-
-A modular Terraform design is used, with separate modules for:
-
-VPC networking
-
-Application Load Balancer
-
-ACM certificates and Route 53 DNS
-
-ECS services
-
-IAM roles for ECS
-
-Terraform state is:
-
-Stored remotely in S3
-
-Protected with DynamoDB state locking
-
-The infrastructure is idempotent, allowing safe re-runs without unintended changes.
-
-Clean teardown is supported using terraform destroy, ensuring no orphaned resources.
-
-Network & Runtime Security
-
-ECS tasks run exclusively in private subnets and are never directly exposed to the internet.
-
-Inbound traffic is restricted to the Application Load Balancer.
-
-Security groups enforce explicit traffic flows between ALB and ECS tasks.
-
-TLS is handled at the ALB using ACM-managed certificates, avoiding certificate management inside containers.
-
-Outbound traffic from private subnets is controlled via a NAT Gateway.
-
-Centralised logging is enabled using CloudWatch Logs.
-
-Operational Best Practices
-
-Clear separation of build, deploy, and runtime responsibilities.
-
-Defence-in-depth approach through:
-
-Static analysis (CodeQL)
-
-Image vulnerability scanning (Trivy)
-
-Infrastructure policy checks (Checkov)
-
-Deployments are reproducible, secure, and auditable.
-
-The overall design aligns with AWS Well-Architected Framework principles.
 
 ---
 
----
-
-## 🏗 🔨Deployment Overview
+## Deployment Overview
 
 Below are screenshots of the full deployment from the very beginning.
 
@@ -291,7 +241,7 @@ Below are screenshots of the full deployment from the very beginning.
 
 
 
-## 🧰 Prerequisites
+## Replicating this project
 
 Before you begin:
 
@@ -300,7 +250,71 @@ Before you begin:
 - **Docker**
 - **GitHub Account**
 - **AWS Account + Credentials**
+- Permissions for the pipelines and ECS
+- A registered domain managed in Route 53
 - Configure AWS CLI:
   ```bash
   aws configure
 
+**Step by Step replication**
+
+1. Clone and Fork the Repository
+
+```
+git clone https://github.com/Fah7m/ECS-project---Threat-composer-APP.git
+cd ECS-project---Threat-composer-APP
+```
+
+Push the project to your own **Github Repository**
+
+2. Create the Terraform backend Resources
+
+This project uses a remote backend in terraform. Create the resources manually once in your AWS account:
+- S3 bucket (for remote statefile)
+- DynamoDB (for state locking)
+
+
+3. Configure AWS OIDC and Roles for Github Actions
+
+Create an IAM role in AWS that trusts GitHub's OIDC provider
+- Trusts GitHub's OIDC provider
+- Allows:
+  - Terraform to manage AWS Resources
+  - Docker Image push/pull to ECR
+  - Access to S3 and DynamoDB backend  
+
+4. Configure GitHub Repository Secrets
+
+The project uses github secrets to store some sensitive data such as :
+- AWS_REGION
+- ECR_REGISTRY
+- ECR_REPOSITORY
+- And the roles to assume
+
+5. (Optional) Local test
+
+If you want to validate locally before CI/CD:
+
+```
+aws configure
+cd infra/
+terraform init
+terraform plan
+```
+
+6. Run the CI/CD Pipelines (Manual Trigger)
+
+From GiHub Actions:
+
+1. Trigger the Docker pipeline
+   - Builds the application image
+   - Scans it with Trivy and CodeQL
+   - Pushes the image to AWS ECR
+
+2. Trigger the terraform apply pipeline
+   - Runs Checkov security scans
+   - Provisions the infrastructure (VPC, ECS, ALB etc)
+   - Navigate to your domain (https://your-domain)
+     
+3.  Once happy run the terraform destroy pipeline
+    - Removes everything that was deployed 
