@@ -235,7 +235,11 @@ Security scanning is integrated directly into the CI/CD pipelines to detect issu
 
 ## Improvements
 
-
+- Migrate sensitive configuration from GitHub Secrets to **AWS Secrets Manager** to centralise secret storage and reduce CI/CD exposure.
+- Address and remediate all findings reported by **Checkov** to further strengthen infrastructure security and compliance.
+- Introduce **Terragrunt** to simplify multi-environment (dev/stage/prod) deployments and reduce Terraform configuration duplication.
+- Add an explicit **health check** to the Dockerfile to improve container observability and ECS task health monitoring.
+- Extend CI/CD pipelines with post-deployment smoke tests to validate application availability after releases.
 
 ---
 
