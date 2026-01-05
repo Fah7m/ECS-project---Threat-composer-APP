@@ -63,25 +63,31 @@ This project follows a clear separation of concerns between user access, develop
 
 **User Workflow (Application Access)**
 
--A user navigates to the application domain (for example: http://tm.f7him.com).
+- A user navigates to the application domain (for example: http://tm.f7him.com).
 
-- Route 53 resolves the domain directly to the Application Load Balancer where a http redirect to https is setup.
+- **Route 53** resolves the domain directly to the Application Load Balancer.
 
-**-The ALB:**
+**The ALB:**
 
-- Terminates HTTPS using an ACM-managed TLS certificate
+- A client initiates an HTTPS connection to the application domain.
 
-- Listens on port 443
+- The Application Load Balancer presents an ACM-managed TLS certificate and completes the TLS handshake with the client.
 
-- The ALB forwards incoming requests to a target group associated with the ECS service.
+- An encrypted HTTPS session is established between the client and the ALB.
 
-- ECS tasks, running in private subnets, process the request and return a response.
+- The ALB decrypts the incoming request and applies listener rules and routing logic.
 
-- Application logs are streamed to CloudWatch Logs.
+ - The ALB forwards the request to the ECS target group
 
-- Any outbound traffic from ECS tasks (e.g. image pulls or external API calls) exits via:
+- ECS tasks, running in private subnets, receive the request over the VPC’s internal network.
 
-- Private subnet → NAT Gateway → Internet Gateway → Internet
+- The application inside the ECS task processes the request and generates a response.
+
+- The response is sent back to the ALB.
+
+- The ALB returns the response to the client over the existing HTTPS connection.
+
+- Application logs are streamed to CloudWatch Logs, and any outbound traffic from ECS tasks exits via the Private subnet → NAT Gateway → Internet Gateway → Internet
 
 - At no point are application containers directly exposed to the internet.
 
