@@ -61,30 +61,29 @@ ECS/
 
 This project follows a clear separation of concerns between user access, developer interaction, and automated deployment, with industry best practices applied throughout.
 
-**🧑‍💻 User Workflow (Application Access)**
+**User Workflow (Application Access)**
 
 -A user navigates to the application domain (for example: http://tm.f7him.com).
 
--Route 53 resolves the domain directly to the Application Load Balancer (ALB) using an Alias record.
+- Route 53 resolves the domain directly to the Application Load Balancer where a http redirect to https is setup.
 
--The ALB:
+**-The ALB:**
 
-Terminates HTTPS using an ACM-managed TLS certificate
+- Terminates HTTPS using an ACM-managed TLS certificate
 
-Listens on port 443
+- Listens on port 443
 
-The ALB forwards incoming requests to a target group associated with the ECS service.
+- The ALB forwards incoming requests to a target group associated with the ECS service.
 
-ECS tasks, running in private subnets, process the request and return a response.
+- ECS tasks, running in private subnets, process the request and return a response.
 
-Application logs are streamed to CloudWatch Logs.
+- Application logs are streamed to CloudWatch Logs.
 
-Any outbound traffic from ECS tasks (e.g. image pulls or external API calls) exits via:
+- Any outbound traffic from ECS tasks (e.g. image pulls or external API calls) exits via:
 
-Private subnet → NAT Gateway → Internet Gateway → Internet
+- Private subnet → NAT Gateway → Internet Gateway → Internet
 
-
-At no point are application containers directly exposed to the internet.
+- At no point are application containers directly exposed to the internet.
 
 **👨‍💻 Developer Workflow (Source to Deployment)**
 
