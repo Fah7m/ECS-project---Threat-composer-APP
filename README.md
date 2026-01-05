@@ -8,7 +8,21 @@ Threat Composer is an open-source threat modeling tool originally developed by A
 
 ---
 
-## 🚀 Project Overview
+## Table of Contents
+
+- [Architecture](#project-overview)
+- [Workflow](#workflow)
+  - [User Workflow](#user-workflow)
+  - [Developer & CI/CD Workflow](#developer--cicd-workflow)
+- [Security & Best Practices](#security-highlights-and-best-practices)
+- [Improvements](#improvements)
+- [Deployment Overview](#deployment-overview)
+- [Replication Guide](#replicating-this-project)
+
+
+
+---
+## Project Overview
 
 This project includes:
 
@@ -44,12 +58,12 @@ ECS/
 ```
 
 ---
-## 🔄 Workflow
+##  Workflow
 
 This project follows a clear separation of concerns between user access, developer interaction, and automated deployment, with industry best practices applied throughout.
 
 
-**User Workflow (Application Access)**
+### User Workflow (Application Access)
 
 - A user navigates to the application domain (for example: http://tm.f7him.com).
 
@@ -72,7 +86,7 @@ This project follows a clear separation of concerns between user access, develop
 - At no point are application containers directly exposed to the internet.
 
 
-**Developer Workflow & CI/CD Workflow (Source to Deployment)**
+### Developer Workflow & CI/CD Workflow (Source to Deployment)
 
 - The developer makes changes to application code (/app) and/or infrastructure code (/infra) and pushes them to the main branch.
 
@@ -215,6 +229,12 @@ Security scanning is integrated directly into the CI/CD pipelines to detect issu
 - Deployments are **reproducible, seccure, and auditable**
   
 - The overall design aligns with AWS Well-Architected Framework principles.
+
+
+---
+
+## Improvements
+
 
 
 ---
