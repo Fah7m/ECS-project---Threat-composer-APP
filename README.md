@@ -31,7 +31,7 @@ ECS/
 ├── infra/
 │   ├── main.tf
 │   ├── provider.tf
-|   ├── terraform.tfvars
+|   ├── terraform.tfvars (hidden)
 │   ├── variable.tf
 │   └── modules/
 │       ├── acm/
