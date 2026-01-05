@@ -42,20 +42,6 @@ ECS/
 │       └── vpc/
 └── README.md
 ```
----
-
-## 📌 Table of Contents
-
-1. [Architecture Overview](#architecture-overview)  
-2. [Prerequisites](#prerequisites)  
-3. [Local Development](#local-development)  
-4. [Infrastructure Deployment](#infrastructure-deployment)  
-5. [CI/CD Deployment](#ci-cd-deployment)  
-6. [Improvements & Future Work](#improvements--future-work)  
-7. [Improvements](#troubleshooting)  
-8. [License](#license)
-
----
 
 ## 🔄 Workflow
 
@@ -77,7 +63,7 @@ This project follows a clear separation of concerns between user access, develop
 
 - The ALB decrypts the incoming request and applies listener rules and routing logic.
 
- - The ALB forwards the request to the ECS target group
+- The ALB forwards the request to the ECS target group
 
 - ECS tasks, running in private subnets, receive the request over the VPC’s internal network.
 
@@ -91,35 +77,58 @@ This project follows a clear separation of concerns between user access, develop
 
 - At no point are application containers directly exposed to the internet.
 
-**👨‍💻 Developer Workflow (Source to Deployment)**
+**👨‍💻 Developer Workflow & CI/CD Workflow (Source to Deployment)**
 
-The developer makes changes to:
+- The developer makes changes to application code (/app) and/or infrastructure code (/infra) and pushes them to the main branch.
 
-Application code (/app)
+- GitHub Actions workflows are manually triggered to control when deployments occur.
 
-Infrastructure code (/infra)
+- CI/CD authenticates to AWS using OIDC, allowing GitHub Actions to assume IAM roles with short-lived credentials and no long-lived secrets.
 
-Changes are committed and pushed to the main branch.
+- **The application pipeline:**
 
-This push triggers GitHub Actions workflows for both application and infrastructure deployment.
+- Builds the Docker image using a multi-stage build
 
-The developer never handles or stores AWS credentials locally for CI/CD.
+- Tags with SHA and pushes the image to Amazon ECR
 
-All deployments are fully automated and reproducible.
+- **The infrastructure pipeline:**
+
+- Runs Terraform to provision or update AWS resources
+
+- Uses S3 for remote Terraform state storage
+
+- Uses DynamoDB for state locking to prevent concurrent runs
+
+- **Terraform deploys and manages the below modules:**
+
+- VPC networking, including:
+  - VPC, Public/Private subnets, Internet Gateway (IGW), NAT GW and routing
+
+- Application Load Balancer (ALB), including:
+  - HTTP/S listeners and Target Groups
+
+- ACM certificates for TLS, including DNS validation
+
+- Route 53 DNS records, including:
+  - Alias records pointing the domain to the ALB
+
+- ECS (Fargate) resources, including:
+  - ECS cluster, Task Definitions, ECS Service running in private subnets
+
+IAM roles and policies required for ECS, including:
+
+Task execution role
+
+Task role with least-privilege permissions
+
+Security groups controlling traffic between the ALB and ECS tasks
+
+- The ECS service pulls the latest container image from ECR and performs a rolling update of running tasks.
+
+- Infrastructure can be safely removed by manually triggering a Terraform destroy workflow, ensuring clean teardown of all managed resources.
+
 
 **🚀 Deployment & CI/CD Workflow (Secure Automation)**
-
-This project uses GitHub Actions with OIDC to deploy without long-lived AWS credentials.
-
-Authentication (OIDC – No Long-Lived Credentials)
-
-GitHub Actions authenticates to AWS using OpenID Connect (OIDC).
-
-AWS IAM validates the GitHub identity and issues temporary credentials.
-
-No static AWS access keys are stored in GitHub secrets.
-
-This follows AWS and GitHub security best practices.
 
 Pipeline 1: Application Build & Image Push
 
