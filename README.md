@@ -4,7 +4,8 @@ This repository contains a production-ready deployment of the **Threat Composer*
 
 Threat Composer is an open-source threat modeling tool originally developed by AWS Labs, designed to help users brainstorm, document, and improve threat models. 
 
-<img width="928" height="653" alt="image" src="https://github.com/user-attachments/assets/9db8dc92-21e6-458e-be3b-26beba13e6ac" />
+<img width="1167" height="655" alt="image" src="https://github.com/user-attachments/assets/3427d893-9236-41ef-9112-eac9a80f8919" />
+
 
 ---
 
